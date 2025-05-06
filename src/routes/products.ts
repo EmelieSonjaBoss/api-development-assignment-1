@@ -1,3 +1,10 @@
+/**
+ * Defines the product-related routes.
+ * 
+ * All routes for creating, reading, updating, and deleting products.
+ * Base route: /products
+ */
+
 import express from 'express'
 import { 
   createProduct, 

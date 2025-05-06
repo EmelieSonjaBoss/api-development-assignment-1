@@ -1,3 +1,10 @@
+/**
+ * Defines the category-related routes.
+ * 
+ * All routes for creating, reading, updating, and deleting categories.
+ * Base route: /categories
+ */
+
 import express from 'express'
 import { 
   createCategory, 
@@ -6,7 +13,7 @@ import {
   fetchCategory, 
   updateCategory
   } from '../controller/categoryController'
-import { fetchProductsByCategory } from '../controller/productsController'
+  import { fetchProductsByCategory } from '../controller/productsController'
 const router = express.Router()
 
 router.get('/', fetchAllCategories)

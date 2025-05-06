@@ -1,3 +1,7 @@
+/**
+ * Defines the TypeScript interface for a product database row.
+ */
+
 import { RowDataPacket } from "mysql2"
 
 export interface IProductDBResponse extends RowDataPacket {

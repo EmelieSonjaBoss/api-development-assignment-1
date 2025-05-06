@@ -1,3 +1,7 @@
+/**
+ * Defines the TypeScript interface for a category database row.
+ */
+
 import { RowDataPacket } from "mysql2"
 
 export interface ICategoryDBResponse extends RowDataPacket{
