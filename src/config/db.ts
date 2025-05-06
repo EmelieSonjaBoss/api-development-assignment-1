@@ -6,6 +6,7 @@
  */
 
 import mysql from 'mysql2/promise'
+import { env } from './env'
 
 /**
  * A connection pool to the MySQL database.
@@ -13,11 +14,11 @@ import mysql from 'mysql2/promise'
  * The pool is configured using environment variables.
  */
 export const db = mysql.createPool({
-  host:     process.env.DB_HOST || "",
-  user:     process.env.DB_USER || "",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "",
-  port:     parseInt(process.env.DB_PORT || "3306") 
+  host:     env.DB_HOST,
+  user:     env.DB_USER,
+  password: env.DB_PASSWORD,
+  database: env.DB_NAME,
+  port:     env.DB_PORT,
 })
 
 /**
