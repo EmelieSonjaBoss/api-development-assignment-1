@@ -1,16 +1,17 @@
 import express from 'express'
 import { 
-  createTodo, 
-  deleteTodo, 
+  createCategory, 
+  deleteCategory, 
   fetchAllCategories, 
   fetchCategory, 
-  updateTodo } from '../controller/categoryController'
+  updateCategory,
+  } from '../controller/categoryController'
 const router = express.Router()
 
 router.get('/', fetchAllCategories)
 router.get('/:id', fetchCategory)
-router.post('/', createTodo)
-router.patch('/:id', updateTodo)
-router.delete('/:id', deleteTodo)
+router.post('/', createCategory)
+router.patch('/:id', updateCategory)
+router.delete('/:id', deleteCategory)
 
 export default router

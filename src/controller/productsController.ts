@@ -3,9 +3,6 @@ import { db } from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 // WORKS 5/5 16:22!
-/**
- * Part of the exercise to figure search and sort functionality out on your own
- */
 export const fetchAllSubtasks = async (req: Request, res: Response) => {
   try {
     // const [rows] = await db.query<ISubtask[]>('SELECT * FROM subtasks')
@@ -23,7 +20,7 @@ export const fetchSubtask = async (req: Request, res: Response) => {
 
   try {
     const sql = `
-      SELECT * FROM subtasks 
+      SELECT * FROM products 
       WHERE id = ?
     `
     const [rows] = await db.query<RowDataPacket[]>(sql, [id])

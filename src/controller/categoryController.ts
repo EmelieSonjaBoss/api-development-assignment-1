@@ -1,4 +1,4 @@
-// Half way translated
+// Kind of finished, just check everything:
 
 import { Request, Response } from "express"
 import { db } from "../config/db"
@@ -6,7 +6,6 @@ import { ResultSetHeader, RowDataPacket } from "mysql2"
 import { ICategoryDBResponse } from "../models/ICategoryDBResponse"
 
 /**
- * ( Part of the exercise to figure search and sort functionality out on your own )
  * G ON THE ASSIGNMENT: "Hämta alla produkter tillhörande en viss kategori med GET:
  * http://localhost:3000/categories/:id/products "
  * VG ON THE ASSIGNMENT: "Utöver endpoints på G-nivå, skall även följande filtrering/sökning skapas för:
@@ -15,75 +14,50 @@ import { ICategoryDBResponse } from "../models/ICategoryDBResponse"
  * Skall kunna sortera produktlistan efter pris, både (asc/desc) "
  */
 
-// WORKS 5/5 16:21!
 /**
- * Fetches all categories together
- * @param req 
- * @param res 
+ * Fetches all categories together.
+ * @param req - The request object.
+ * @param res - The response object.
  */
 export const fetchAllCategories = async (req: Request, res: Response) => {
-  const search = req.query.search
-  const sort = req.query.sort
-  // let filteredCategories = categories
-
-  let sql = 'SELECT * FROM categories'
-  let params: any = []
-  let searchSQL = ""
-  let sortSQL = ""
   try {
-    if (search) { 
-      searchSQL
-      searchSQL = " WHERE content LIKE ?"
-      params = [`%${search}%`]
-    } 
-    
-    if (sort) {
-      const orderBy = sort === 'desc' ? 'DESC' : 'ASC'
-      sortSQL = " ORDER BY content " + orderBy
-    } 
-    
-    sql = sql + searchSQL + sortSQL
-    // console.log(sql)
-    // console.log(params)
-    const [rows] = await db.query<RowDataPacket[]>(sql, params)
+    const sql = 'SELECT * FROM categories'
+    const [rows] = await db.query<RowDataPacket[]>(sql)
     res.json(rows)
-  } catch(error: unknown) {
-    const message = error  instanceof Error ? error.message : 'Unknown error'
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     res.status(500).json({error: message})
   }
 }
 
 
 /**
- * Fetches a single category
- * @param req 
- * @param res 
- * @returns 
+ * Fetches a single category along with the products associated with it.
+ * @param req - The request object, containing the category ID in the route parameters.
+ * @param res - The response object, used to return the category and associated products or errors.
+ * @returns A JSON response with the category details and products, or an error message if not found.
  */
 export const fetchCategory = async (req: Request, res: Response) => {
   const id = req.params.id
 
   try {
-    // CHECK THAT THIS IS RIGHT!!!!!!! <---------------------
-    // Check all the "s" at the ends.
+   
     const sql = `
       SELECT 
-        category.id AS category_id,
-        category.name AS category_name,
-        product.id AS product_id,
-        product.title AS product_title,
-        product.description AS product_description,
-        product.stock AS product_stock,
-        product.price AS product_price,
-        product.img AS product_img,
-        product.created AS product_created,
-        products.category_id AS product_category_id
-      FROM categories
-      LEFT JOIN products ON categories.id = products.category_id
-      WHERE products.id = ?
+        c.category_id AS category_id,
+        c.category_name AS category_name,
+        p.product_id AS product_id,
+        p.product_title AS product_title,
+        p.product_description AS product_description,
+        p.product_stock AS product_stock,
+        p.product_price AS product_price,
+        p.product_img AS product_img,
+        p.product_created AS product_created,
+        p.category_id AS category_id
+      FROM categories c
+      LEFT JOIN products p ON c.category_id = p.category_id
+      WHERE c.category_id = ?
     `
-    // earlier ^ it was - subtasks.created_at AS subtask_created_at
-
     const [rows] = await db.query<ICategoryDBResponse[]>(sql, [id])
     const category = rows[0]
     if (!category) {
@@ -97,29 +71,30 @@ export const fetchCategory = async (req: Request, res: Response) => {
   }
 }
 
+// Helper function to format the category and its products into a specific response format.
 const formatCategory = (rows: ICategoryDBResponse[]) => ({
   id:         rows[0].category_id,
   content:    rows[0].category_name,
   products: rows.map((row) => ({
       id:        row.product_id,
-      title:   row.product_title,
-      description:   row.product_description,
-      stock:      row.product_stock,
-      price :row.product_price,
-      img: row.product_img,
-      created: row.product_created,
-      category: row.product_category_id
+      title:     row.product_title,
+      description: row.product_description,
+      stock:     row.product_stock,
+      price:     row.product_price,
+      img:       row.product_img,
+      created:   row.product_created,
+      category:  row.product_category_id
   }))
 })
 
 
 /**
- * Creates a category
- * @param req 
- * @param res 
- * @returns 
+ * Creates a new category with the given name.
+ * @param req - The request object, containing the category name in the body.
+ * @param res - The response object, used to return the created category or errors.
+ * @returns A JSON response with the created category ID, or an error message.
  */
-export const createTodo = async (req: Request, res: Response) => {
+export const createCategory = async (req: Request, res: Response) => {
   const content = req.body.content;
   if (content === undefined) {
     res.status(400).json({error: 'Content is required'}) 
@@ -128,67 +103,75 @@ export const createTodo = async (req: Request, res: Response) => {
 
   try {
     const sql = `
-      INSERT INTO todos (content)
+      INSERT INTO categories (category_name)
       VALUES (?)
     `
     const [result] = await db.query<ResultSetHeader>(sql, [content])
-    res.status(201).json({message: 'Todo created', id: result.insertId})
+    res.status(201).json({message: 'Category created', id: result.insertId})
   } catch (error: unknown) {
-    const message = error  instanceof Error ? error.message : 'Unknown error'
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    res.status(500).json({error: message})
+  }
+}
+
+
+
+/**
+ * Updates an existing category's name.
+ * @param req - The request object, containing the category ID in the route parameters and the new name in the body.
+ * @param res - The response object, used to return the updated category or errors.
+ * @returns A JSON response confirming the update, or an error message if the category is not found.
+ */
+export const updateCategory = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const content = req.body.content;
+
+  if (content === undefined) {
+    res.status(400).json({error: 'Content is required'})
+    return;
+  }
+
+  try {
+    const sql = `
+      UPDATE categories
+      SET category_name = ?
+      WHERE category_id = ?
+    `
+    const [result] = await db.query<ResultSetHeader>(sql, [content, id])
+    if (result.affectedRows === 0) {
+      res.status(404).json({message: 'Category not found'})
+      return;
+    }
+    res.json({message: 'Category updated'})
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     res.status(500).json({error: message})
   }
 }
 
 
 /**
- * Part of the exercise to figure updateTodo out on your own
+ * Deletes a category by its ID.
+ * @param req - The request object, containing the category ID in the route parameters.
+ * @param res - The response object, used to return a success message or errors.
+ * @returns A JSON response confirming the deletion, or an error message if the category is not found.
  */
-/**
- * Updates a category
- * @param req 
- * @param res 
- */
-export const updateTodo = (req: Request, res: Response) => {
-  // const {content, done} = req.body // Destructur JS Object
-  // if (content === undefined || done === undefined) {
-  //   res.status(400).json({error: 'Content and Done are required'})
-  //   return
-  // }
-
-  // const todo = todos.find((t) => t.id === parseInt(req.params.id))
-  // if (!todo) {
-  //   res.status(404).json({error: 'Todo not found'})
-  //   return;
-  // }
-  
-  // todo.content = content;
-  // todo.done = done;
-  // res.json({message: 'Todo updated', data: todo})
-}
-
-
-/**
- * Deletes a category
- * @param req 
- * @param res 
- * @returns 
- */
-export const deleteTodo = async (req: Request, res: Response) => {
+export const deleteCategory = async (req: Request, res: Response) => {
   const id = req.params.id
 
   try {
     const sql = `
-      DELETE FROM todos
-      WHERE id = ?
+      DELETE FROM categories
+      WHERE category_id = ?
     `
     const [result] = await db.query<ResultSetHeader>(sql, [id])
     if (result.affectedRows === 0) {
-      res.status(404).json({message: 'Todo not found'})
+      res.status(404).json({message: 'Category not found'})
       return;
     }
-    res.json({message: 'Todo deleted'})
+    res.json({message: 'Category deleted'})
   } catch (error: unknown) {
-    const message = error  instanceof Error ? error.message : 'Unknown error'
+    const message = error instanceof Error ? error.message : 'Unknown error'
     res.status(500).json({error: message})
   }
 }
