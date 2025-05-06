@@ -1,18 +1,13 @@
-// Kind of finished, just check everything:
+/**
+ * Controller for handling category-related operations.
+ * @module categoryController
+ */
 
 import { Request, Response } from "express"
 import { db } from "../config/db"
 import { ResultSetHeader, RowDataPacket } from "mysql2"
 import { ICategoryDBResponse } from "../models/ICategoryDBResponse"
 
-/**
- * G ON THE ASSIGNMENT: "Hämta alla produkter tillhörande en viss kategori med GET:
- * http://localhost:3000/categories/:id/products "
- * VG ON THE ASSIGNMENT: "Utöver endpoints på G-nivå, skall även följande filtrering/sökning skapas för:
- * Hämta alla produkter med GET: http://localhost:3000/products
- * Skall kunna söka produkter efter produkt titel
- * Skall kunna sortera produktlistan efter pris, både (asc/desc) "
- */
 
 /**
  * Fetches all categories together.
@@ -113,7 +108,6 @@ export const createCategory = async (req: Request, res: Response) => {
     res.status(500).json({error: message})
   }
 }
-
 
 
 /**

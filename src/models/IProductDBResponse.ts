@@ -1,8 +1,6 @@
 import { RowDataPacket } from "mysql2"
 
-export interface ICategoryDBResponse extends RowDataPacket{
-  category_id: number
-  category_name: string
+export interface IProductDBResponse extends RowDataPacket {
   product_id: number
   product_title: string
   product_description: string
@@ -10,5 +8,5 @@ export interface ICategoryDBResponse extends RowDataPacket{
   product_price: number
   product_img: string
   product_created: string
-  product_category_id: number
+  category_id: number
 }
