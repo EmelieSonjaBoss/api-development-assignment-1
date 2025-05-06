@@ -14,7 +14,7 @@ import { z } from 'zod'
 const envSchema = z.object({
   DB_HOST: z.string().min(1, 'DB_HOST is required'),
   DB_USER: z.string().min(1, 'DB_USER is required'),
-  DB_PASSWORD: z.string().min(1, 'DB_PASSWORD is required'),
+  DB_PASSWORD: z.string().optional(), // Password is now optional
   DB_NAME: z.string().min(1, 'DB_NAME is required'),
   DB_PORT: z
     .string()
@@ -31,5 +31,4 @@ if (!_env.success) {
   process.exit(1)
 }
 
-// Export the validated, typed environment object
 export const env = _env.data
