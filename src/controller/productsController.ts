@@ -57,6 +57,35 @@ export const fetchProduct = async (req: Request, res: Response) => {
 
 
 /**
+ * Fetches all products for a specific category
+ * @param req 
+ * @param res 
+ */
+export const fetchProductsByCategory = async (req: Request, res: Response) => {
+  const categoryId = req.params.id
+
+  try {
+    const sql = `
+      SELECT * FROM products
+      WHERE category_id = ?
+    `
+    const [rows] = await db.query<IProductDBResponse[]>(sql, [categoryId])
+
+    if (rows.length === 0) {
+      res.status(404).json({ message: `No products found for category with id ${categoryId}` })
+      return
+    }
+
+    res.json(rows)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    res.status(500).json({ error: message })
+  }
+}
+
+
+
+/**
  * Creates a new product.
  * 
  * @param req - The request object containing the product data.
