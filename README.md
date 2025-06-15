@@ -1,12 +1,12 @@
 ## API-development-assignment-1
 
 
-# 🛒 Webshop API
+#  Webshop API
 
 
 A RESTful API for managing categories and products in a simple webshop system. Built with **Node.js**, **Express**, and **MySQL**, this API supports full CRUD operations for both categories and products.
 
-## 📦 Features
+##  Features
 
 - CRUD operations for **Categories**
 - CRUD operations for **Products**
@@ -23,9 +23,9 @@ A RESTful API for managing categories and products in a simple webshop system. B
 ![ER-diagram](ERdiagram.webp)
 
 ---
-## 🚀 Getting Started
+##  Getting Started
 
-### ✅ Prerequisites
+###  Prerequisites
 
 - Node.js (v18+)
 - MySQL
@@ -48,7 +48,7 @@ DB_PORT=3306
 
 ---
 
-### 🧪 Running the Server
+###  Running the Server
 ```
 npm install
 npm run dev
@@ -64,7 +64,7 @@ http://localhost:3000
 
 ---
 
-### 🛠️ API Endpoints
+###  API Endpoints
 ### 🔹 Categories
 | Method | Endpoint                   | Description                    |
 | ------ | -------------------------- | ------------------------------ |
